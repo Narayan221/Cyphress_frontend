@@ -11,15 +11,13 @@
             position: fixed;
             top: 0;
             left: 0;
-            width: 100%;
+            right: 0;
             padding: 0.5rem 1rem;
-            /* relative padding */
             display: flex;
             justify-content: center;
-            /* center logo horizontally */
             align-items: center;
-            /* center vertically */
             z-index: 1000;
+            min-height: 60px;
         }
 
         /* Logo Styling with Gradient Italic & Shine */
@@ -27,8 +25,7 @@
             font-family: Garamond, serif;
             font-style: italic;
             font-weight: bold;
-            font-size: clamp(2rem, 5vw, 6rem);
-            /* responsive font size */
+            font-size: clamp(1.8rem, 3.5vw, 4rem);
             background: linear-gradient(90deg,
                     transparent 1%,
                     #e7e8e9 1%,
@@ -37,12 +34,13 @@
                     #0d037c 80%,
                     transparent 100%);
             background-size: 200% auto;
-            /* for shine animation */
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             letter-spacing: 2px;
             margin: 0;
             animation: shine 8s linear infinite;
+            white-space: nowrap;
+            text-align: center;
         }
 
         /* Shine animation */
@@ -258,7 +256,11 @@
             width: 40px;
             height: 40px;
             animation: spin 1s linear infinite;
-            margin: 10px auto;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 9999;
         }
 
         @keyframes spin {
@@ -268,6 +270,33 @@
 
             100% {
                 transform: rotate(360deg);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .top-logo-bar {
+                padding: 0.3rem 0.5rem;
+            }
+            .logo {
+                font-size: clamp(1.2rem, 6vw, 2.5rem);
+                letter-spacing: 1px;
+            }
+            .app-container {
+                width: 95vw;
+                height: 85vh;
+                flex-direction: column;
+                margin-top: 60px;
+            }
+            .sidebar {
+                width: 100%;
+                height: auto;
+                padding: 15px;
+                border-right: none;
+                border-bottom: 1px solid #ddd;
+            }
+            .chat-container {
+                height: 100%;
+                padding: 10px 15px;
             }
         }
     </style>
@@ -284,7 +313,7 @@
             <button onclick="uploadPDF()">Upload File</button>
             <button onclick="deletePDF()" style="background:#ef4444;margin-top:5px;">Delete PDF</button>
             <button onclick="clearChat()">Clear Chat</button>
-            <div id="loader" style="display:none;"></div>
+
             <div id="uploadedFile"></div>
         </div>
 
@@ -296,9 +325,11 @@
             </div>
         </div>
     </div>
+    <div id="loader" style="display:none;"></div>
 
     <script>
         const backendUrl = "https://cyphress-backend.onrender.com";
+        // const backendUrl = "http://127.0.0.1:8000";
         let sessionId = localStorage.getItem("sessionId");
 
         // Save chat and uploaded file in localStorage
@@ -324,6 +355,11 @@
         // Hook into actions
         window.onload = () => {
             restoreState();
+            document.getElementById("userInput").addEventListener("keypress", function(event) {
+                if (event.key === "Enter") {
+                    ask();
+                }
+            });
         };
 
 
@@ -372,18 +408,24 @@
             const formData = new FormData();
             formData.append("file", fileInput.files[0]);
             formData.append("session_id", sessionId);
-            loader.style.display = "block";
+            
+            document.querySelectorAll("button").forEach(btn => btn.disabled = true);
+            document.querySelector(".app-container").style.filter = "blur(2px)";
+            document.getElementById("loader").style.display = "block";
+            
             try {
                 const res = await fetch(`${backendUrl}/upload_pdf/`, { method: "POST", body: formData });
                 const data = await res.json();
                 document.getElementById("uploadedFile").innerText = `Uploaded: ${data.filename}`;
                 saveState();
-                const fileInput = document.getElementById("pdfFile");
                 fileInput.value = "";
-                loader.style.display = "none";
             } catch (err) {
                 console.error("Upload failed:", err);
                 alert("Upload failed");
+            } finally {
+                document.querySelectorAll("button").forEach(btn => btn.disabled = false);
+                document.querySelector(".app-container").style.filter = "none";
+                document.getElementById("loader").style.display = "none";
             }
         }
 
