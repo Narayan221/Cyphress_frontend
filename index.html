@@ -409,11 +409,12 @@
             formData.append("file", fileInput.files[0]);
             formData.append("session_id", sessionId);
             
-            document.querySelectorAll("button").forEach(btn => btn.disabled = true);
-            document.querySelector(".app-container").style.filter = "blur(2px)";
-            document.getElementById("loader").style.display = "block";
-            
             try {
+                // Disable/blur only when starting upload
+                document.querySelectorAll("button").forEach(btn => btn.disabled = true);
+                document.querySelector(".app-container").style.filter = "blur(2px)";
+                document.getElementById("loader").style.display = "block";
+                
                 const res = await fetch(`${backendUrl}/upload_pdf/`, { method: "POST", body: formData });
                 const data = await res.json();
                 document.getElementById("uploadedFile").innerText = `Uploaded: ${data.filename}`;
