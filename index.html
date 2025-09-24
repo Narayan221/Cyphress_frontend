@@ -8,16 +8,14 @@
     <style>
         /* Top Logo Bar */
         .top-logo-bar {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
+            position: relative;
+            width: 100%;
             padding: 0.5rem 1rem;
             display: flex;
             justify-content: center;
             align-items: center;
-            z-index: 1000;
             min-height: 60px;
+            /* background: rgba(255, 255, 255, 0.95); */
         }
 
         /* Logo Styling with Gradient Italic & Shine */
@@ -25,7 +23,7 @@
             font-family: Garamond, serif;
             font-style: italic;
             font-weight: bold;
-            font-size: clamp(1.8rem, 3.5vw, 4rem);
+            font-size: clamp(1.8rem, 3vw, 3.5rem);
             background: linear-gradient(90deg,
                     transparent 1%,
                     #e7e8e9 1%,
@@ -41,6 +39,7 @@
             animation: shine 8s linear infinite;
             white-space: nowrap;
             text-align: center;
+            flex-shrink: 0;
         }
 
         /* Shine animation */
@@ -54,20 +53,7 @@
             }
         }
 
-        /* Optional: adjust for very small screens */
-        /* @media (max-width: 500px) {
-            .logo {
-                font-size: clamp(1.5rem, 8vw, 3rem);
-                letter-spacing: 1px;
-            }
-        } */
 
-
-        /* Push down chat + sidebar so they don’t overlap */
-        .app-container {
-            margin-top: 70px;
-            /* adjust based on bar height */
-        }
 
         /* GENERAL STYLING */
         * {
@@ -80,9 +66,10 @@
             font-family: 'Inter', sans-serif;
             background: #eceff1;
             display: flex;
-            justify-content: center;
+            flex-direction: column;
             align-items: center;
-            height: 100vh;
+            min-height: 100vh;
+            padding: 20px 0;
         }
 
         .app-container {
@@ -328,8 +315,8 @@
     <div id="loader" style="display:none;"></div>
 
     <script>
-        const backendUrl = "https://cyphress-backend.onrender.com";
-        // const backendUrl = "http://127.0.0.1:8000";
+        // const backendUrl = "https://cyphress-backend.onrender.com";
+        const backendUrl = "http://127.0.0.1:8000";
         let sessionId = localStorage.getItem("sessionId");
 
         // Save chat and uploaded file in localStorage
